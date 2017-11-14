@@ -17,7 +17,14 @@ package org.greenrobot.eventbus.meta;
 
 /**
  * Interface for generated indexes.
+ * 编译生成java class的基类
  */
 public interface SubscriberInfoIndex {
+    /**
+     * 根据订阅者的全类名查找对应的订阅者具体信息
+     *
+     * @param subscriberClass
+     * @return
+     */
     SubscriberInfo getSubscriberInfo(Class<?> subscriberClass);
 }

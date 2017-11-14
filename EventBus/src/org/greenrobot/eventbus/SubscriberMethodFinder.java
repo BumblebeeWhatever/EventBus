@@ -36,11 +36,12 @@ class SubscriberMethodFinder {
     private static final int SYNTHETIC = 0x1000;
 
     private static final int MODIFIERS_IGNORE = Modifier.ABSTRACT | Modifier.STATIC | BRIDGE | SYNTHETIC;
-    private static final Map<Class<?>, List<SubscriberMethod>> METHOD_CACHE = new ConcurrentHashMap<>();
+    //订阅者<->订阅者对应的所有订阅方法
+    private static final Map<Class<?>, List<SubscriberMethod>> METHOD_CACHE = new ConcurrentHashMap<>();//key是订阅者全类名，value是该订阅者的回调方法s
 
-    private List<SubscriberInfoIndex> subscriberInfoIndexes;
+    private List<SubscriberInfoIndex> subscriberInfoIndexes;//FIXME 为什么需要外部传入，不能自己主动配置生成么？难道是需要类名？
     private final boolean strictMethodVerification;
-    private final boolean ignoreGeneratedIndex;
+    private final boolean ignoreGeneratedIndex;//是否使用编译时生成的Java文件，false则使用运行时反射获取注册方法，true则需要通过subscriberInfoIndexes中遍历
 
     private static final int POOL_SIZE = 4;
     private static final FindState[] FIND_STATE_POOL = new FindState[POOL_SIZE];
@@ -52,6 +53,10 @@ class SubscriberMethodFinder {
         this.ignoreGeneratedIndex = ignoreGeneratedIndex;
     }
 
+    /**
+     * @param subscriberClass 订阅者全类名
+     * @return 该订阅者对应的所有注册方法s
+     */
     List<SubscriberMethod> findSubscriberMethods(Class<?> subscriberClass) {
         List<SubscriberMethod> subscriberMethods = METHOD_CACHE.get(subscriberClass);
         if (subscriberMethods != null) {
@@ -72,6 +77,12 @@ class SubscriberMethodFinder {
         }
     }
 
+    /**
+     * 查找该订阅者对应的所有注册方法，包括父类
+     *
+     * @param subscriberClass
+     * @return
+     */
     private List<SubscriberMethod> findUsingInfo(Class<?> subscriberClass) {
         FindState findState = prepareFindState();
         findState.initForSubscriber(subscriberClass);
@@ -85,7 +96,7 @@ class SubscriberMethodFinder {
                     }
                 }
             } else {
-                findUsingReflectionInSingleClass(findState);
+                findUsingReflectionInSingleClass(findState);//根据编译生成的class查找不到时就使用反射
             }
             findState.moveToSuperclass();
         }
@@ -119,15 +130,19 @@ class SubscriberMethodFinder {
         return new FindState();
     }
 
+    /**
+     * @param findState 根据findState.clazz查找其对应的订阅者具体信息
+     * @return
+     */
     private SubscriberInfo getSubscriberInfo(FindState findState) {
         if (findState.subscriberInfo != null && findState.subscriberInfo.getSuperSubscriberInfo() != null) {
             SubscriberInfo superclassInfo = findState.subscriberInfo.getSuperSubscriberInfo();
-            if (findState.clazz == superclassInfo.getSubscriberClass()) {
+            if (findState.clazz == superclassInfo.getSubscriberClass()) {//FIXME 不懂，目标订阅者的class与其父类的类是一致的就返回？
                 return superclassInfo;
             }
         }
         if (subscriberInfoIndexes != null) {
-            for (SubscriberInfoIndex index : subscriberInfoIndexes) {
+            for (SubscriberInfoIndex index : subscriberInfoIndexes) {//从编译生成的class中查找
                 SubscriberInfo info = index.getSubscriberInfo(findState.clazz);
                 if (info != null) {
                     return info;
@@ -191,6 +206,7 @@ class SubscriberMethodFinder {
     static class FindState {
         final List<SubscriberMethod> subscriberMethods = new ArrayList<>();
         final Map<Class, Object> anyMethodByEventType = new HashMap<>();
+        //key是"方法名->回调线程"，value是订阅者类
         final Map<String, Class> subscriberClassByMethodKey = new HashMap<>();
         final StringBuilder methodKeyBuilder = new StringBuilder(128);
 

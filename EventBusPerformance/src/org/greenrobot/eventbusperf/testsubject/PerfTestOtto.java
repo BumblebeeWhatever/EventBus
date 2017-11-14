@@ -24,14 +24,14 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.squareup.otto.ThreadEnforcer;
 
+import org.greenrobot.eventbusperf.Test;
+import org.greenrobot.eventbusperf.TestEvent;
+import org.greenrobot.eventbusperf.TestParams;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.greenrobot.eventbusperf.Test;
-import org.greenrobot.eventbusperf.TestEvent;
-import org.greenrobot.eventbusperf.TestParams;
 
 public abstract class PerfTestOtto extends Test {
 
@@ -76,6 +76,7 @@ public abstract class PerfTestOtto extends Test {
             super.registerSubscribers();
         }
 
+        @Override
         public void runTest() {
             TestEvent event = new TestEvent();
             long timeStart = System.nanoTime();
@@ -103,6 +104,7 @@ public abstract class PerfTestOtto extends Test {
             super(context, params);
         }
 
+        @Override
         public void runTest() {
             super.registerUnregisterOneSubscribers();
             long timeNanos = super.registerSubscribers();
@@ -124,6 +126,7 @@ public abstract class PerfTestOtto extends Test {
         }
 
         @SuppressWarnings("rawtypes")
+        @Override
         public void runTest() {
             long time = 0;
             if (cacheField == null) {

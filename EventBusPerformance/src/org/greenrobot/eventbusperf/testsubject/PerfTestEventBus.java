@@ -21,15 +21,14 @@ import android.content.Context;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-
 import org.greenrobot.eventbusperf.MyEventBusIndex;
 import org.greenrobot.eventbusperf.Test;
 import org.greenrobot.eventbusperf.TestEvent;
 import org.greenrobot.eventbusperf.TestParams;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 public abstract class PerfTestEventBus extends Test {
 
@@ -54,7 +53,7 @@ public abstract class PerfTestEventBus extends Test {
         try {
             Constructor<?> constructor = subscriberClass.getConstructor(PerfTestEventBus.class);
             for (int i = 0; i < params.getSubscriberCount(); i++) {
-                Object subscriber = constructor.newInstance(this);
+                Object subscriber = constructor.newInstance(this);//FIXME why need this?
                 subscribers.add(subscriber);
             }
         } catch (Exception e) {
@@ -97,6 +96,7 @@ public abstract class PerfTestEventBus extends Test {
             super.registerSubscribers();
         }
 
+        @Override
         public void runTest() {
             TestEvent event = new TestEvent();
             long timeStart = System.nanoTime();
@@ -130,6 +130,7 @@ public abstract class PerfTestEventBus extends Test {
             super(context, params);
         }
 
+        @Override
         public void runTest() {
             super.registerUnregisterOneSubscribers();
             long timeNanos = super.registerSubscribers();
@@ -150,6 +151,7 @@ public abstract class PerfTestEventBus extends Test {
             super(context, params);
         }
 
+        @Override
         public void runTest() {
             long time = 0;
             if (clearCachesMethod == null) {
@@ -202,7 +204,7 @@ public abstract class PerfTestEventBus extends Test {
 
         @Override
         public String getDisplayName() {
-            return "EventBus Register, first time"+ getDisplayModifier(params);
+            return "EventBus Register, first time" + getDisplayModifier(params);
         }
 
     }

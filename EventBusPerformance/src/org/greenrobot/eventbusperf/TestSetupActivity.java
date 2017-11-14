@@ -26,16 +26,18 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
-
 import org.greenrobot.eventbusperf.testsubject.PerfTestEventBus;
 import org.greenrobot.eventbusperf.testsubject.PerfTestOtto;
 
+import java.util.ArrayList;
+
+/**
+ * 配置EventBus参数的页面，在TestRunnerActivity中真正验证
+ */
 public class TestSetupActivity extends Activity {
 
     @SuppressWarnings("rawtypes")
-    static final Class[] TEST_CLASSES_EVENTBUS = {PerfTestEventBus.Post.class,//
+    static final Class[] TEST_CLASSES_EVENTBUS = {PerfTestEventBus.Post.class,//FIXME 这俩是啥关系
             PerfTestEventBus.RegisterOneByOne.class,//
             PerfTestEventBus.RegisterAll.class, //
             PerfTestEventBus.RegisterFirstTime.class};

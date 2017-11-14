@@ -23,8 +23,8 @@ import java.lang.reflect.Method;
 
 /** Base class for generated subscriber meta info classes created by annotation processing. */
 public abstract class AbstractSubscriberInfo implements SubscriberInfo {
-    private final Class subscriberClass;
-    private final Class<? extends SubscriberInfo> superSubscriberInfoClass;
+    private final Class subscriberClass;//订阅者本类
+    private final Class<? extends SubscriberInfo> superSubscriberInfoClass;//订阅者父类信息
     private final boolean shouldCheckSuperclass;
 
     protected AbstractSubscriberInfo(Class subscriberClass, Class<? extends SubscriberInfo> superSubscriberInfoClass,

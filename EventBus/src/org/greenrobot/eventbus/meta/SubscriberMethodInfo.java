@@ -18,9 +18,9 @@ package org.greenrobot.eventbus.meta;
 import org.greenrobot.eventbus.ThreadMode;
 
 public class SubscriberMethodInfo {
-    final String methodName;
+    final String methodName;//订阅方法名
     final ThreadMode threadMode;
-    final Class<?> eventType;
+    final Class<?> eventType;//订阅方法的参数类
     final int priority;
     final boolean sticky;
 
